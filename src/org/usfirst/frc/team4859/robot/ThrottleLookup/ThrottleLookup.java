@@ -2,11 +2,17 @@ package org.usfirst.frc.team4859.robot.ThrottleLookup;
 
 public class ThrottleLookup 
 {
+	/* The tables are set up as follows, the first range of numbers are associated with the
+	 * number being passed to the calcJoystickCorrection routine.  In the correctionTable1 
+	 * below, {.015, .25, .50, .75, 1.0} are the values that "x" is compared to in calcJoystickCorrection.
+	 * The second array of numbers, {.000, .05, .1, .2, 0.4}, make up the array of values that will be
+	 * return.  For instance, if the value of x is .623, a value on the line between .1 and .2 will be returned.
+	 */
 
 		// SlowY
 		public static double[][] correctionTable1 = {
 			{.015, .25, .500, .7500, 1.00},
-			{.000, .05, .1, .2, 0.4}};
+			{.000, .05, .1,   .2,    0.4}};
 		
 		// NormY
 		public static double[][] correctionTable2 = {
@@ -23,6 +29,9 @@ public class ThrottleLookup
 			{.015, .25, .500, .75, 1.0},
 			{.000, .10, .175, .30, 0.6}};
 	
+	/* This routine use the values of the above tables to return a calculated
+	 * corrected value.  It handles numbers between fractional numbers between -1 and 1.
+	 */
 	public static double calcJoystickCorrection(String tableName, double x)
 	{
 		double[][] correctionTable;
@@ -39,13 +48,17 @@ public class ThrottleLookup
 				break;
 			default : correctionTable = correctionTable1;
 		}
+		
+		// Determine if x is negative and remember it
 		boolean isNegative = x < 0;
 		
+		// Make it positive so we don't have to deal with negatives differently.
 		x = Math.abs(x);
 		
 		int pos = 0; 
 		double returnValue;
 		
+		// Find the position in the table where x lies.  (row 0, columns 0-4)
 		while ((pos < 5) && (x > correctionTable[0][pos]))
 		{
 			pos++;
@@ -63,14 +76,15 @@ public class ThrottleLookup
 			}
 			else
 			{
-				return 0.0;
+				returnValue = 0.0;
 			}
 		}
 		else
 		{
-			return 1.0;
+			returnValue = 1.0;
 		}
 		
+		// return the return value (negate it it was originally negative.
 		if (isNegative)
 			returnValue = -returnValue;
 		
